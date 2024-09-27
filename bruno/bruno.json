@@ -1,0 +1,6 @@
+{
+  "version": "1",
+  "name": "web-starter-kit",
+  "type": "collection",
+  "ignore": ["node_modules", ".git"]
+}
