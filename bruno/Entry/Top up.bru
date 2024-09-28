@@ -1,0 +1,23 @@
+meta {
+  name: Top up
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{baseUrl}}/api/v1/entry/topup
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "amount_in_cents": 100,
+    "account_id": "{{user_a}}"
+  }
+}
+
+vars:pre-request {
+  user_a: 7w7s3kgxz3pkm9s33ks5w3xh
+  user_b: 0kzfgyf43vczurtjbgb0m941
+}

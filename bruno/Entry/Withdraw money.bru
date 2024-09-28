@@ -1,0 +1,23 @@
+meta {
+  name: Withdraw money
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{baseUrl}}/api/v1/entry/withdraw
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "amount_in_cents": 30,
+    "account_id": "{{user_a}}"
+  }
+}
+
+vars:pre-request {
+  user_a: 7w7s3kgxz3pkm9s33ks5w3xh
+  user_b: 0kzfgyf43vczurtjbgb0m941
+}

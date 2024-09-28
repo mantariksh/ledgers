@@ -6,7 +6,7 @@ services:
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: web-starter-kit
+      POSTGRES_DB: ledgers
     logging:
       driver: none
   redis:

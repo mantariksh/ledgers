@@ -1,7 +1,15 @@
-import { BeforeInsert, Column, Entity, Index, PrimaryColumn } from 'typeorm'
+import {
+  BeforeInsert,
+  Column,
+  Entity,
+  Index,
+  OneToMany,
+  PrimaryColumn,
+} from 'typeorm'
 
 import { nanoid } from '@shared/utils/nanoid'
 import { BaseEntity } from './base.entity'
+import { Account } from './account.entity'
 
 @Entity({ name: 'users' })
 export class User extends BaseEntity {
@@ -22,4 +30,7 @@ export class User extends BaseEntity {
   })
   @Index({ unique: true })
   email: string
+
+  @OneToMany(() => Account, (account) => account.user)
+  accounts: Account[]
 }
