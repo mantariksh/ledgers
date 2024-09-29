@@ -3,51 +3,62 @@ import {
   SendMoneyRequestDto,
   TopUpWalletRequestDto,
   WithdrawMoneyRequestDto,
-} from '@shared/dto/entry.dto'
+} from '@shared/dto/wallet.dto'
 import { WalletService } from './wallet.service'
+import { UserService } from 'modules/user/user.service'
 
 @Controller()
 export class WalletController {
-  constructor(private readonly walletService: WalletService) {}
+  constructor(
+    private readonly walletService: WalletService,
+    private readonly userService: UserService
+  ) {}
 
   @Post('topup')
   async topUpWallet(
     @Body()
-    { account_id, amount_in_cents }: TopUpWalletRequestDto
+    { amount_in_cents, user_id }: TopUpWalletRequestDto
   ) {
+    const wallet_account = await this.userService.getWalletAccountForUser({
+      user_id,
+    })
     await this.walletService.topUpWallet({
-      account_id,
+      account_id: wallet_account.id,
       amount_in_cents,
     })
-    return { message: 'Entry created' }
   }
 
   @Post('send')
   async sendMoney(
     @Body()
-    {
-      amount_in_cents,
-      sender_account_id,
-      receiver_account_id,
-    }: SendMoneyRequestDto
+    { amount_in_cents, receiver_user_id, sender_user_id }: SendMoneyRequestDto
   ) {
+    const sender_wallet_account =
+      await this.userService.getWalletAccountForUser({
+        user_id: sender_user_id,
+      })
+    const receiver_wallet_account =
+      await this.userService.getWalletAccountForUser({
+        user_id: receiver_user_id,
+      })
     await this.walletService.sendMoney({
       amount_in_cents,
-      sender_account_id,
-      receiver_account_id,
+      receiver_account_id: receiver_wallet_account.id,
+      sender_account_id: sender_wallet_account.id,
     })
-    return { message: 'Entry created' }
   }
 
   @Post('withdraw')
   async withdrawMoney(
     @Body()
-    { amount_in_cents, account_id }: WithdrawMoneyRequestDto
+    { amount_in_cents, user_id }: WithdrawMoneyRequestDto
   ) {
-    await this.walletService.withdrawMoney({
-      amount_in_cents,
-      account_id,
+    const wallet_account = await this.userService.getWalletAccountForUser({
+      user_id,
     })
-    return { message: 'Entry created' }
+    await this.walletService.withdrawMoney({
+      account_id: wallet_account.id,
+      amount_in_cents,
+    })
   }
 }

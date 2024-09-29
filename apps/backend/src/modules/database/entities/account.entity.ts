@@ -3,14 +3,12 @@ import {
   Column,
   Entity,
   Index,
-  ManyToOne,
   OneToMany,
   PrimaryColumn,
 } from 'typeorm'
 
 import { nanoid } from '@shared/utils/nanoid'
 import { BaseEntity } from './base.entity'
-import { User } from './user.entity'
 import { Entry } from './entry.entity'
 
 export type SpecialAccount = 'cash' | 'credit_card_fees' | 'revenue'
@@ -36,9 +34,6 @@ export class Account extends BaseEntity {
 
   @Column('int')
   balance_in_cents: number
-
-  @ManyToOne(() => User, (user) => user.accounts, { nullable: true })
-  user: User
 
   @OneToMany(() => Entry, (entry) => entry.account)
   entries: Entry[]

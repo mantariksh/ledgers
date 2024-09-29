@@ -3,13 +3,14 @@ import {
   Column,
   Entity,
   Index,
-  OneToMany,
+  JoinColumn,
+  OneToOne,
   PrimaryColumn,
 } from 'typeorm'
 
 import { nanoid } from '@shared/utils/nanoid'
-import { BaseEntity } from './base.entity'
 import { Account } from './account.entity'
+import { BaseEntity } from './base.entity'
 
 @Entity({ name: 'users' })
 export class User extends BaseEntity {
@@ -18,7 +19,9 @@ export class User extends BaseEntity {
 
   @BeforeInsert()
   setId() {
-    this.id = nanoid()
+    if (!this.id) {
+      this.id = nanoid()
+    }
   }
 
   @Column('varchar', {
@@ -31,6 +34,7 @@ export class User extends BaseEntity {
   @Index({ unique: true })
   email: string
 
-  @OneToMany(() => Account, (account) => account.user)
-  accounts: Account[]
+  @OneToOne(() => Account, { eager: true })
+  @JoinColumn()
+  wallet_account: Account
 }
