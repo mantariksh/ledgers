@@ -4,18 +4,18 @@ import {
   TopUpWalletRequestDto,
   WithdrawMoneyRequestDto,
 } from '@shared/dto/entry.dto'
-import { EntryService } from './entry.service'
+import { WalletService } from './wallet.service'
 
 @Controller()
-export class EntryController {
-  constructor(private readonly entryService: EntryService) {}
+export class WalletController {
+  constructor(private readonly walletService: WalletService) {}
 
   @Post('topup')
   async topUpWallet(
     @Body()
     { account_id, amount_in_cents }: TopUpWalletRequestDto
   ) {
-    await this.entryService.topUpWallet({
+    await this.walletService.topUpWallet({
       account_id,
       amount_in_cents,
     })
@@ -31,7 +31,7 @@ export class EntryController {
       receiver_account_id,
     }: SendMoneyRequestDto
   ) {
-    await this.entryService.sendMoney({
+    await this.walletService.sendMoney({
       amount_in_cents,
       sender_account_id,
       receiver_account_id,
@@ -44,7 +44,7 @@ export class EntryController {
     @Body()
     { amount_in_cents, account_id }: WithdrawMoneyRequestDto
   ) {
-    await this.entryService.withdrawMoney({
+    await this.walletService.withdrawMoney({
       amount_in_cents,
       account_id,
     })

@@ -1,11 +1,11 @@
-import { RouterModule, Routes } from '@nestjs/core'
 import { Module, ModuleMetadata } from '@nestjs/common'
-import { EntryModule } from './entry/entry.module'
+import { RouterModule, Routes } from '@nestjs/core'
+import { WalletModule } from './wallet/wallet.module'
 
 const v1Routes: Routes = [
   {
     path: '/v1',
-    children: [{ path: '/entry', module: EntryModule }],
+    children: [{ path: '/wallet', module: WalletModule }],
   },
 ]
 

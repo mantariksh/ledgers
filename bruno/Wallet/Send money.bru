@@ -1,19 +1,20 @@
 meta {
-  name: Top up
+  name: Send money
   type: http
-  seq: 1
+  seq: 2
 }
 
 post {
-  url: {{baseUrl}}/api/v1/entry/topup
+  url: {{baseUrl}}/api/v1/wallet/send
   body: json
   auth: none
 }
 
 body:json {
   {
-    "amount_in_cents": 100,
-    "account_id": "{{user_a}}"
+    "amount_in_cents": 50,
+    "sender_account_id": "{{user_a}}",
+    "receiver_account_id": "{{user_b}}"
   }
 }
 
