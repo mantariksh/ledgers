@@ -1,32 +1,33 @@
-import { TypeOrmModuleOptions } from '@nestjs/typeorm'
+import { PostgreSqlDriver } from '@mikro-orm/postgresql'
 import convict from 'convict'
 import { join } from 'path'
 
-import { NamingStrategy } from './utils/naming-strategy'
-
+import { MikroOrmModuleOptions } from '@mikro-orm/nestjs'
 import { schema } from '../config/config.schema'
+import { Migrator } from '@mikro-orm/migrations'
 
 const config = convict(schema)
 
 const isTest = config.get('environment') === 'test'
 
-export const ormConfig: TypeOrmModuleOptions = {
-  type: 'postgres',
-  logging: config.get('database.logging'),
+const ormConfig: MikroOrmModuleOptions = {
+  driver: PostgreSqlDriver,
+  debug: config.get('database.logging'),
   host: config.get('database.host'),
   port: config.get('database.port'),
-  username: config.get('database.username'),
+  user: config.get('database.username'),
   password: config.get('database.password'),
-  database: config.get('database.name'),
-  // ssl only for AWS proxy environments
-  ssl: config.get('database.host').includes('.proxy-') ? true : undefined,
-  // https://docs.nestjs.com/techniques/database#auto-load-entities
-  synchronize: false, // do not automatically sync entities
-  // js for runtime, ts for typeorm cli
+  dbName: config.get('database.name'),
+  driverOptions: {
+    connection: {
+      // ssl only for AWS proxy environments
+      ssl: config.get('database.host').includes('.proxy-') ? true : undefined,
+      keepAlive: isTest ? undefined : true,
+    },
+  },
+  // js for runtime, ts for cli
   entities: [join(__dirname, 'entities', '**/*.entity{.js,.ts}')],
-  migrations: [join(__dirname, 'migrations', '*{.js,.ts}')],
-  // ref: https://github.com/typeorm/typeorm/issues/3388 to set pool size
-  extra: isTest
+  pool: isTest
     ? undefined
     : {
         // Disconnect pool connection after 10 minutes of inactivity. Set to 0 for infinite.
@@ -34,7 +35,11 @@ export const ormConfig: TypeOrmModuleOptions = {
         // https://node-postgres.com/apis/pool#new-pool
         idleTimeoutMillis: 10 * 60 * 1000,
         max: config.get('database.maxPool'), // Default pg-pool is 20
-        keepAlive: true,
       },
-  namingStrategy: new NamingStrategy(),
+  extensions: [Migrator],
+  migrations: {
+    path: join(__dirname, 'migrations'),
+  },
 }
+
+export default ormConfig

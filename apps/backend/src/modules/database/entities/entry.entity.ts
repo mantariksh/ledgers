@@ -1,29 +1,19 @@
-import { BeforeInsert, Column, Entity, ManyToOne, PrimaryColumn } from 'typeorm'
-
-import { nanoid } from '@shared/utils/nanoid'
-import { BaseEntity } from './base.entity'
+import { Entity, ManyToOne, Property } from '@mikro-orm/core'
 import { Account } from './account.entity'
+import { BaseEntity } from './base.entity'
 import { Transaction } from './transaction.entity'
 
-@Entity({ name: 'entries' })
+@Entity()
 export class Entry extends BaseEntity {
-  @PrimaryColumn({ type: 'varchar', length: 24 })
-  id: string
-
-  @BeforeInsert()
-  setId() {
-    this.id = nanoid()
-  }
-
-  @Column('int')
+  @Property()
   amount_in_cents: number
 
-  @Column('text')
+  @Property({ type: 'text' })
   type: 'credit' | 'debit'
 
-  @ManyToOne(() => Account, (account) => account.entries)
+  @ManyToOne(() => Account)
   account: Account
 
-  @ManyToOne(() => Transaction, (transaction) => transaction.entries)
+  @ManyToOne()
   transaction: Transaction
 }

@@ -1,9 +1,10 @@
+import { EntityRepository, ref } from '@mikro-orm/core'
+import { InjectRepository } from '@mikro-orm/nestjs'
+import { EntityManager } from '@mikro-orm/postgresql'
 import { Injectable } from '@nestjs/common'
-import { InjectRepository } from '@nestjs/typeorm'
 import { isValidNanoId } from '@shared/utils/nanoid'
 import { Account } from 'modules/database/entities/account.entity'
 import { User } from 'modules/database/entities/user.entity'
-import { DataSource, EntityManager, Repository } from 'typeorm'
 
 export interface CreateEntriesDto {
   description: string
@@ -18,36 +19,31 @@ export interface CreateEntriesDto {
 export class UserService {
   constructor(
     @InjectRepository(User)
-    private userRepository: Repository<User>,
-    @InjectRepository(Account)
-    private accountRepository: Repository<Account>,
-    private dataSource: DataSource
+    private userRepository: EntityRepository<User>,
+    private em: EntityManager
   ) {}
 
   private async createUser({
-    manager,
+    em,
     wallet_account,
     user_id,
   }: {
-    manager: EntityManager
+    em: EntityManager
     wallet_account?: Account
     user_id: string
   }) {
-    return manager
-      .withRepository(this.userRepository)
-      .create({
-        id: user_id,
-        email: `abc${Date.now()}@gmail.com`,
-        wallet_account,
-      })
-      .save()
+    const user = new User()
+    user.id = user_id
+    user.email = `ABC${Date.now()}@gmail.com`
+    if (wallet_account) {
+      user.wallet_account = ref(wallet_account)
+    }
+    em.persist(user)
   }
 
   async getWalletAccountForUser({ user_id }: { user_id: string }) {
     const user = await this.userRepository.findOne({
-      where: {
-        id: user_id,
-      },
+      id: user_id,
     })
     if (user) {
       return user.wallet_account
@@ -55,20 +51,17 @@ export class UserService {
     if (!isValidNanoId(user_id)) {
       throw new Error('Invalid user ID')
     }
-    return this.dataSource.transaction(async (manager) => {
-      const wallet_account = await manager
-        .withRepository(this.accountRepository)
-        .create({
-          type: 'credit_normal',
-          balance_in_cents: 0,
-        })
-        .save()
-      const newUser = await this.createUser({
-        manager,
+    return this.em.transactional(async (em) => {
+      const wallet_account = new Account()
+      wallet_account.type = 'credit_normal'
+      wallet_account.balance_in_cents = 0
+      em.persist(wallet_account)
+      this.createUser({
+        em,
         wallet_account,
         user_id,
       })
-      return newUser.wallet_account
+      return wallet_account
     })
   }
 }

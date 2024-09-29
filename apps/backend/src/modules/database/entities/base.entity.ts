@@ -1,17 +1,13 @@
-import {
-  CreateDateColumn,
-  DeleteDateColumn,
-  BaseEntity as TypeormBaseEntity,
-  UpdateDateColumn,
-} from 'typeorm'
+import { PrimaryKey, Property } from '@mikro-orm/core'
+import { nanoid } from '@shared/utils/nanoid'
 
-export class BaseEntity extends TypeormBaseEntity {
-  @CreateDateColumn({ type: 'timestamptz' })
-  createdAt: Date
+export abstract class BaseEntity {
+  @PrimaryKey()
+  id = nanoid()
 
-  @UpdateDateColumn({ type: 'timestamptz' })
-  updatedAt: Date
+  @Property({ type: 'timestamp with time zone' })
+  createdAt = new Date()
 
-  @DeleteDateColumn({ type: 'timestamptz' })
-  deletedAt: Date | null
+  @Property({ type: 'timestamp with time zone' })
+  updatedAt = new Date()
 }

@@ -1,9 +1,8 @@
+import { EntityManager, LockMode } from '@mikro-orm/postgresql'
 import { Injectable } from '@nestjs/common'
-import { InjectRepository } from '@nestjs/typeorm'
 import { Account } from 'modules/database/entities/account.entity'
 import { Entry } from 'modules/database/entities/entry.entity'
 import { Transaction } from 'modules/database/entities/transaction.entity'
-import { DataSource, EntityManager, In, Repository } from 'typeorm'
 
 export interface CreateEntriesDto {
   description: string
@@ -16,15 +15,7 @@ export interface CreateEntriesDto {
 
 @Injectable()
 export class EntryService {
-  constructor(
-    @InjectRepository(Entry)
-    private entryRepository: Repository<Entry>,
-    @InjectRepository(Account)
-    private accountRepository: Repository<Account>,
-    @InjectRepository(Transaction)
-    private transactionRepository: Repository<Transaction>,
-    private dataSource: DataSource
-  ) {}
+  constructor(private readonly em: EntityManager) {}
 
   private isBalanceChangePositive({
     account,
@@ -39,13 +30,7 @@ export class EntryService {
     return account.type === 'debit_normal'
   }
 
-  async createEntries({
-    data,
-    transactionManager,
-  }: {
-    data: CreateEntriesDto
-    transactionManager?: EntityManager
-  }) {
+  async createEntries(data: CreateEntriesDto) {
     const credit_entries = data.entries.filter(
       (entry) => entry.entry_type === 'credit'
     )
@@ -71,30 +56,29 @@ export class EntryService {
       throw new Error('Credit total must equal debit total')
     }
     const account_ids = data.entries.map((entry) => entry.account_id)
-    const runOperation = async (manager: EntityManager) => {
-      const accounts = await manager
-        .withRepository(this.accountRepository)
-        .find({
-          where: {
-            id: In(account_ids),
+    const account_ids_deduped = Array.from(new Set(account_ids))
+    return this.em.transactional(async (em) => {
+      const accounts: Account[] = []
+      for (const account_id of account_ids_deduped) {
+        const found_account = await em.findOne(
+          Account,
+          {
+            id: account_id,
           },
-          lock: {
-            mode: 'pessimistic_write',
-          },
-        })
-      const found_account_ids = new Set(accounts.map((account) => account.id))
-      account_ids.forEach((account_id) => {
-        if (!found_account_ids.has(account_id)) {
+          {
+            lockMode: LockMode.PESSIMISTIC_WRITE,
+          }
+        )
+        if (!found_account) {
           throw new Error('Account not found')
         }
-      })
+        accounts.push(found_account)
+      }
 
       // Generate transaction entity
-      const transaction = await manager.save(
-        this.transactionRepository.create({
-          description: data.description,
-        })
-      )
+      const transaction = new Transaction()
+      transaction.description = data.description
+      em.persist(transaction)
 
       // Generate entry entities
       const entries = data.entries.map((entry) => {
@@ -104,12 +88,12 @@ export class EntryService {
         if (!account) {
           throw new Error('Account not found')
         }
-        return this.entryRepository.create({
-          amount_in_cents: entry.amount_in_cents,
-          type: entry.entry_type,
-          account,
-          transaction,
-        })
+        const entryEntity = new Entry()
+        entryEntity.amount_in_cents = entry.amount_in_cents
+        entryEntity.type = entry.entry_type
+        entryEntity.account = account
+        entryEntity.transaction = transaction
+        return entryEntity
       })
 
       // Update account entities
@@ -126,10 +110,7 @@ export class EntryService {
         account.balance_in_cents += balanceChange
       })
 
-      await manager.save([...entries, ...accounts])
-    }
-    return transactionManager
-      ? runOperation(transactionManager)
-      : this.dataSource.transaction(runOperation)
+      em.persist([...entries, ...accounts])
+    })
   }
 }

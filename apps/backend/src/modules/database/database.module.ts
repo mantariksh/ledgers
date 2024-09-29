@@ -1,6 +1,6 @@
-import { TypeOrmModule } from '@nestjs/typeorm'
-import { ormConfig } from './orm-config'
+import { MikroOrmModule } from '@mikro-orm/nestjs'
+import ormConfig from './orm-config'
 
-export const DatabaseModule = TypeOrmModule.forRootAsync({
+export const DatabaseModule = MikroOrmModule.forRootAsync({
   useFactory: () => ormConfig,
 })

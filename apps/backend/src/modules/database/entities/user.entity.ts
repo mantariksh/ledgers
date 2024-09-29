@@ -1,40 +1,13 @@
-import {
-  BeforeInsert,
-  Column,
-  Entity,
-  Index,
-  JoinColumn,
-  OneToOne,
-  PrimaryColumn,
-} from 'typeorm'
-
-import { nanoid } from '@shared/utils/nanoid'
+import { Entity, OneToOne, Property, Ref } from '@mikro-orm/core'
 import { Account } from './account.entity'
 import { BaseEntity } from './base.entity'
+import { LowercasedType } from '../utils/LowercasedType'
 
-@Entity({ name: 'users' })
+@Entity()
 export class User extends BaseEntity {
-  @PrimaryColumn({ type: 'varchar', length: 24 })
-  id: string
-
-  @BeforeInsert()
-  setId() {
-    if (!this.id) {
-      this.id = nanoid()
-    }
-  }
-
-  @Column('varchar', {
-    length: 255,
-    transformer: {
-      to: (val: string) => val.toLowerCase(),
-      from: (val: string) => val,
-    },
-  })
-  @Index({ unique: true })
+  @Property({ type: LowercasedType, unique: true })
   email: string
 
-  @OneToOne(() => Account, { eager: true })
-  @JoinColumn()
-  wallet_account: Account
+  @OneToOne(() => Account)
+  wallet_account: Ref<Account>
 }

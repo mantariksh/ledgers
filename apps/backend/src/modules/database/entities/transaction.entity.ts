@@ -1,22 +1,12 @@
-import { BeforeInsert, Column, Entity, OneToMany, PrimaryColumn } from 'typeorm'
-
-import { nanoid } from '@shared/utils/nanoid'
+import { Collection, Entity, OneToMany, Property } from '@mikro-orm/core'
 import { BaseEntity } from './base.entity'
 import { Entry } from './entry.entity'
 
-@Entity({ name: 'transactions' })
+@Entity()
 export class Transaction extends BaseEntity {
-  @PrimaryColumn({ type: 'varchar', length: 24 })
-  id: string
-
-  @BeforeInsert()
-  setId() {
-    this.id = nanoid()
-  }
-
-  @Column('text')
+  @Property({ type: 'text' })
   description: string
 
   @OneToMany(() => Entry, (entry) => entry.transaction)
-  entries: Entry[]
+  entries = new Collection<Entry>(this)
 }
