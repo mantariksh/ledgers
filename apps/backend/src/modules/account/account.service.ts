@@ -8,7 +8,7 @@ import {
 
 @Injectable()
 export class AccountService {
-  SPECIAL_ACCOUNT_ID_CACHE: Partial<Record<SpecialAccount, string>> = {}
+  private SPECIAL_ACCOUNT_ID_CACHE: Partial<Record<SpecialAccount, string>> = {}
 
   constructor(
     @InjectRepository(Account)
