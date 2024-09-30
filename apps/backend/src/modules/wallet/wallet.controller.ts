@@ -19,7 +19,7 @@ export class WalletController {
     @Body()
     { amount_in_cents, user_id }: TopUpWalletRequestDto
   ) {
-    const wallet_account = await this.userService.getWalletAccountForUser({
+    const { wallet_account } = await this.userService.getAccountsForUser({
       user_id,
     })
     await this.walletService.topUpWallet({
@@ -33,12 +33,12 @@ export class WalletController {
     @Body()
     { amount_in_cents, receiver_user_id, sender_user_id }: SendMoneyRequestDto
   ) {
-    const sender_wallet_account =
-      await this.userService.getWalletAccountForUser({
+    const { wallet_account: sender_wallet_account } =
+      await this.userService.getAccountsForUser({
         user_id: sender_user_id,
       })
-    const receiver_wallet_account =
-      await this.userService.getWalletAccountForUser({
+    const { wallet_account: receiver_wallet_account } =
+      await this.userService.getAccountsForUser({
         user_id: receiver_user_id,
       })
     await this.walletService.sendMoney({
@@ -53,7 +53,7 @@ export class WalletController {
     @Body()
     { amount_in_cents, user_id }: WithdrawMoneyRequestDto
   ) {
-    const wallet_account = await this.userService.getWalletAccountForUser({
+    const { wallet_account } = await this.userService.getAccountsForUser({
       user_id,
     })
     await this.walletService.withdrawMoney({

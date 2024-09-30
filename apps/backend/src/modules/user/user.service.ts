@@ -26,42 +26,91 @@ export class UserService {
   private async createUser({
     em,
     wallet_account,
+    borrower_principal_account,
+    borrower_interest_account,
+    investor_principal_account,
+    investor_interest_account,
     user_id,
   }: {
     em: EntityManager
-    wallet_account?: Account
+    wallet_account: Account
+    borrower_principal_account: Account
+    borrower_interest_account: Account
+    investor_principal_account: Account
+    investor_interest_account: Account
     user_id: string
   }) {
     const user = new User()
     user.id = user_id
     user.email = `ABC${Date.now()}@gmail.com`
-    if (wallet_account) {
-      user.wallet_account = ref(wallet_account)
-    }
+    user.wallet_account = ref(wallet_account)
+    user.borrower_principal_account = ref(borrower_principal_account)
+    user.borrower_interest_account = ref(borrower_interest_account)
+    user.investor_principal_account = ref(investor_principal_account)
+    user.investor_interest_account = ref(investor_interest_account)
     em.persist(user)
   }
 
-  async getWalletAccountForUser({ user_id }: { user_id: string }) {
+  private createAccount({ type }: { type: Account['type'] }) {
+    const account = new Account()
+    account.type = type
+    account.balance_in_cents = 0
+    return account
+  }
+
+  async getAccountsForUser({ user_id }: { user_id: string }) {
     const user = await this.userRepository.findOne({
       id: user_id,
     })
     if (user) {
-      return user.wallet_account
+      return {
+        wallet_account: user.wallet_account,
+        borrower_principal_account: user.borrower_principal_account,
+        borrower_interest_account: user.borrower_interest_account,
+        investor_principal_account: user.investor_principal_account,
+        investor_interest_account: user.investor_interest_account,
+      }
     }
     if (!isValidNanoId(user_id)) {
       throw new Error('Invalid user ID')
     }
     return this.em.transactional(async (em) => {
-      const wallet_account = new Account()
-      wallet_account.type = 'credit_normal'
-      wallet_account.balance_in_cents = 0
-      em.persist(wallet_account)
+      const wallet_account = this.createAccount({ type: 'credit_normal' })
+      const borrower_principal_account = this.createAccount({
+        type: 'debit_normal',
+      })
+      const borrower_interest_account = this.createAccount({
+        type: 'debit_normal',
+      })
+      const investor_principal_account = this.createAccount({
+        type: 'credit_normal',
+      })
+      const investor_interest_account = this.createAccount({
+        type: 'credit_normal',
+      })
+      em.persist([
+        wallet_account,
+        borrower_principal_account,
+        borrower_interest_account,
+        investor_principal_account,
+        investor_interest_account,
+      ])
       this.createUser({
         em,
         wallet_account,
+        borrower_principal_account,
+        borrower_interest_account,
+        investor_principal_account,
+        investor_interest_account,
         user_id,
       })
-      return wallet_account
+      return {
+        wallet_account,
+        borrower_principal_account,
+        borrower_interest_account,
+        investor_principal_account,
+        investor_interest_account,
+      }
     })
   }
 }
