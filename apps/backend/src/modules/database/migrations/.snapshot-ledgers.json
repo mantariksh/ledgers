@@ -298,6 +298,46 @@
           "nullable": false,
           "length": 255,
           "mappedType": "string"
+        },
+        "borrower_principal_account_id": {
+          "name": "borrower_principal_account_id",
+          "type": "varchar(255)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "length": 255,
+          "mappedType": "string"
+        },
+        "borrower_interest_account_id": {
+          "name": "borrower_interest_account_id",
+          "type": "varchar(255)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "length": 255,
+          "mappedType": "string"
+        },
+        "investor_principal_account_id": {
+          "name": "investor_principal_account_id",
+          "type": "varchar(255)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "length": 255,
+          "mappedType": "string"
+        },
+        "investor_interest_account_id": {
+          "name": "investor_interest_account_id",
+          "type": "varchar(255)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "length": 255,
+          "mappedType": "string"
         }
       },
       "name": "user",
@@ -320,6 +360,38 @@
           "unique": true
         },
         {
+          "columnNames": ["borrower_principal_account_id"],
+          "composite": false,
+          "keyName": "user_borrower_principal_account_id_unique",
+          "constraint": true,
+          "primary": false,
+          "unique": true
+        },
+        {
+          "columnNames": ["borrower_interest_account_id"],
+          "composite": false,
+          "keyName": "user_borrower_interest_account_id_unique",
+          "constraint": true,
+          "primary": false,
+          "unique": true
+        },
+        {
+          "columnNames": ["investor_principal_account_id"],
+          "composite": false,
+          "keyName": "user_investor_principal_account_id_unique",
+          "constraint": true,
+          "primary": false,
+          "unique": true
+        },
+        {
+          "columnNames": ["investor_interest_account_id"],
+          "composite": false,
+          "keyName": "user_investor_interest_account_id_unique",
+          "constraint": true,
+          "primary": false,
+          "unique": true
+        },
+        {
           "keyName": "user_pkey",
           "columnNames": ["id"],
           "composite": false,
@@ -333,6 +405,38 @@
         "user_wallet_account_id_foreign": {
           "constraintName": "user_wallet_account_id_foreign",
           "columnNames": ["wallet_account_id"],
+          "localTableName": "public.user",
+          "referencedColumnNames": ["id"],
+          "referencedTableName": "public.account",
+          "updateRule": "cascade"
+        },
+        "user_borrower_principal_account_id_foreign": {
+          "constraintName": "user_borrower_principal_account_id_foreign",
+          "columnNames": ["borrower_principal_account_id"],
+          "localTableName": "public.user",
+          "referencedColumnNames": ["id"],
+          "referencedTableName": "public.account",
+          "updateRule": "cascade"
+        },
+        "user_borrower_interest_account_id_foreign": {
+          "constraintName": "user_borrower_interest_account_id_foreign",
+          "columnNames": ["borrower_interest_account_id"],
+          "localTableName": "public.user",
+          "referencedColumnNames": ["id"],
+          "referencedTableName": "public.account",
+          "updateRule": "cascade"
+        },
+        "user_investor_principal_account_id_foreign": {
+          "constraintName": "user_investor_principal_account_id_foreign",
+          "columnNames": ["investor_principal_account_id"],
+          "localTableName": "public.user",
+          "referencedColumnNames": ["id"],
+          "referencedTableName": "public.account",
+          "updateRule": "cascade"
+        },
+        "user_investor_interest_account_id_foreign": {
+          "constraintName": "user_investor_interest_account_id_foreign",
+          "columnNames": ["investor_interest_account_id"],
           "localTableName": "public.user",
           "referencedColumnNames": ["id"],
           "referencedTableName": "public.account",

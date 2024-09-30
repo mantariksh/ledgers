@@ -10,4 +10,16 @@ export class User extends BaseEntity {
 
   @OneToOne(() => Account)
   wallet_account: Ref<Account>
+
+  @OneToOne(() => Account)
+  borrower_principal_account: Ref<Account>
+
+  @OneToOne(() => Account)
+  borrower_interest_account: Ref<Account>
+
+  @OneToOne(() => Account)
+  investor_principal_account: Ref<Account>
+
+  @OneToOne(() => Account)
+  investor_interest_account: Ref<Account>
 }
