@@ -8,9 +8,10 @@ Note that for the lending marketplace implementation, I've adjusted the interest
 
 ## Getting started
 
-1. Checkout commit `4e7b746` for toy Venmo clone
-1. Checkout commit `5ffc66d` for lending marketplace with simple interest
-1. Checkout commit `feeb8cd` for lending marketplace with compound interest
+1. Checkout the relevant commit:
+    - `4e7b746` for toy Venmo clone
+    - `5ffc66d` for lending marketplace with simple interest
+    - `feeb8cd` for lending marketplace with compound interest
 1. Run `pnpm install`
 1. Run `pnpm dev`
 1. Run `cd apps/backend && pnpm migration:run`
