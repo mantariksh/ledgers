@@ -533,6 +533,15 @@
           "nullable": false,
           "mappedType": "integer"
         },
+        "current_outstanding_payment_in_cents": {
+          "name": "current_outstanding_payment_in_cents",
+          "type": "int",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "mappedType": "integer"
+        },
         "next_compounding_time": {
           "name": "next_compounding_time",
           "type": "timestamptz",

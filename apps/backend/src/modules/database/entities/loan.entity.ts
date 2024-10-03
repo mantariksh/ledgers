@@ -31,6 +31,9 @@ export class Loan extends BaseEntity {
   @Property()
   term_in_months: number
 
+  @Property()
+  current_outstanding_amount_in_cents: number
+
   @Property({ type: 'timestamp with time zone', nullable: true })
   next_compounding_time: Date | null
 

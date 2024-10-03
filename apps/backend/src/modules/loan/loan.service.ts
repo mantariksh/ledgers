@@ -53,6 +53,7 @@ export class LoanService {
       loan.compounding_frequency = 'month'
       loan.term_in_months = term_in_months
       loan.next_compounding_time = addMinutes(now, 1)
+      loan.current_outstanding_amount_in_cents = 0
 
       em.persist(loan)
       await this.entryService.createEntries(
@@ -102,12 +103,13 @@ export class LoanService {
         return
       }
 
-      const { interest_repayment: interest } = calculateLoanRepayment(loan)
+      const { interest_repayment, principal_repayment } =
+        calculateLoanRepayment(loan)
 
       this.logger.log({
         msg: 'Adding interest for loan',
         user: loan.borrower.$.id,
-        interest,
+        interest: interest_repayment,
       })
 
       // Update ledger for transaction
@@ -117,12 +119,12 @@ export class LoanService {
           entries: [
             {
               account_id: loan.borrower.$.borrower_interest_account.id,
-              amount_in_cents: interest,
+              amount_in_cents: interest_repayment,
               entry_type: 'debit',
             },
             {
               account_id: revenue_account_id,
-              amount_in_cents: interest,
+              amount_in_cents: interest_repayment,
               entry_type: 'credit',
             },
           ],
@@ -132,6 +134,8 @@ export class LoanService {
 
       // Update loan
       loan.interest_transactions.add(update_interest_transaction)
+      loan.current_outstanding_amount_in_cents =
+        interest_repayment + principal_repayment
       em.persist(loan)
     })
   }
@@ -171,16 +175,14 @@ export class LoanService {
     await this.em.transactional(async (em) => {
       await this.em.lock(loan, LockMode.PESSIMISTIC_WRITE)
 
-      if (
-        !loan.next_compounding_time ||
-        loan.next_compounding_time.getTime() > now.getTime()
-      ) {
+      if (loan.current_outstanding_amount_in_cents === 0) {
         // Loan has already been updated by another cron job
         return
       }
 
-      const { interest_repayment, principal_repayment } =
-        calculateLoanRepayment(loan)
+      const { interest_repayment } = calculateLoanRepayment(loan)
+      const principal_repayment =
+        loan.current_outstanding_amount_in_cents - interest_repayment
 
       this.logger.log({
         msg: 'Making payment for loan',
@@ -223,6 +225,8 @@ export class LoanService {
       }
       loan.next_compounding_time =
         loan.remaining_principal_in_cents === 0 ? null : addMinutes(now, 1)
+      loan.current_outstanding_amount_in_cents -=
+        interest_repayment + principal_repayment
       em.persist(loan)
     })
   }
@@ -233,13 +237,11 @@ export class LoanService {
    */
   @CreateRequestContext()
   async makePaymentForAllLoans() {
-    const now = new Date()
     const loansToUpdate = await this.loanRepository.findAll({
       where: {
-        next_compounding_time: {
-          $lt: now,
+        current_outstanding_amount_in_cents: {
+          $gt: 0,
         },
-        remaining_principal_in_cents: { $gt: 0 },
       },
       populate: ['borrower'],
     })
