@@ -1,4 +1,10 @@
-import { Entity, OneToMany, Property, TextType } from '@mikro-orm/core'
+import {
+  Collection,
+  Entity,
+  OneToMany,
+  Property,
+  TextType,
+} from '@mikro-orm/core'
 import { BaseEntity } from './base.entity'
 import { Entry } from './entry.entity'
 
@@ -16,5 +22,5 @@ export class Account extends BaseEntity {
   balance_in_cents: number
 
   @OneToMany(() => Entry, (entry) => entry.account)
-  entries!: Entry[]
+  entries = new Collection<Entry>(this)
 }

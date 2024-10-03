@@ -30,7 +30,7 @@ export class EntryService {
     return account.type === 'debit_normal'
   }
 
-  async createEntries(data: CreateEntriesDto) {
+  async createEntries(data: CreateEntriesDto, em?: EntityManager) {
     const credit_entries = data.entries.filter(
       (entry) => entry.entry_type === 'credit'
     )
@@ -57,7 +57,7 @@ export class EntryService {
     }
     const account_ids = data.entries.map((entry) => entry.account_id)
     const account_ids_deduped = Array.from(new Set(account_ids))
-    return this.em.transactional(async (em) => {
+    const runOperation = async (em: EntityManager) => {
       const accounts: Account[] = []
       for (const account_id of account_ids_deduped) {
         const found_account = await em.findOne(
@@ -111,6 +111,12 @@ export class EntryService {
       })
 
       em.persist([...entries, ...accounts])
-    })
+
+      return transaction
+    }
+    const returnPromise = em
+      ? runOperation(em)
+      : this.em.transactional(runOperation)
+    return returnPromise
   }
 }

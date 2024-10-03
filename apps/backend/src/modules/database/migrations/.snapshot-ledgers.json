@@ -444,6 +444,215 @@
         }
       },
       "nativeEnums": {}
+    },
+    {
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "varchar(255)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "length": 255,
+          "mappedType": "string"
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamptz",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "length": 6,
+          "mappedType": "datetime"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamptz",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "length": 6,
+          "mappedType": "datetime"
+        },
+        "investor_id": {
+          "name": "investor_id",
+          "type": "varchar(255)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "length": 255,
+          "mappedType": "string"
+        },
+        "principal_in_cents": {
+          "name": "principal_in_cents",
+          "type": "int",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "mappedType": "integer"
+        },
+        "interest_rate": {
+          "name": "interest_rate",
+          "type": "real",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "mappedType": "float"
+        },
+        "compounding_frequency": {
+          "name": "compounding_frequency",
+          "type": "varchar(255)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "length": 255,
+          "mappedType": "string"
+        },
+        "num_compounds_in_term": {
+          "name": "num_compounds_in_term",
+          "type": "int",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "mappedType": "integer"
+        },
+        "num_compounds_remaining": {
+          "name": "num_compounds_remaining",
+          "type": "int",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "mappedType": "integer"
+        },
+        "next_compounding_time": {
+          "name": "next_compounding_time",
+          "type": "timestamptz",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "length": 6,
+          "mappedType": "datetime"
+        },
+        "payout_transaction_id": {
+          "name": "payout_transaction_id",
+          "type": "varchar(255)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "length": 255,
+          "mappedType": "string"
+        }
+      },
+      "name": "investment",
+      "schema": "public",
+      "indexes": [
+        {
+          "columnNames": ["payout_transaction_id"],
+          "composite": false,
+          "keyName": "investment_payout_transaction_id_unique",
+          "constraint": true,
+          "primary": false,
+          "unique": true
+        },
+        {
+          "keyName": "investment_pkey",
+          "columnNames": ["id"],
+          "composite": false,
+          "constraint": true,
+          "primary": true,
+          "unique": true
+        }
+      ],
+      "checks": [],
+      "foreignKeys": {
+        "investment_investor_id_foreign": {
+          "constraintName": "investment_investor_id_foreign",
+          "columnNames": ["investor_id"],
+          "localTableName": "public.investment",
+          "referencedColumnNames": ["id"],
+          "referencedTableName": "public.user",
+          "updateRule": "cascade"
+        },
+        "investment_payout_transaction_id_foreign": {
+          "constraintName": "investment_payout_transaction_id_foreign",
+          "columnNames": ["payout_transaction_id"],
+          "localTableName": "public.investment",
+          "referencedColumnNames": ["id"],
+          "referencedTableName": "public.transaction",
+          "deleteRule": "set null",
+          "updateRule": "cascade"
+        }
+      },
+      "nativeEnums": {}
+    },
+    {
+      "columns": {
+        "investment_id": {
+          "name": "investment_id",
+          "type": "varchar(255)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "length": 255,
+          "mappedType": "string"
+        },
+        "transaction_id": {
+          "name": "transaction_id",
+          "type": "varchar(255)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "length": 255,
+          "mappedType": "string"
+        }
+      },
+      "name": "investment_interest_transactions",
+      "schema": "public",
+      "indexes": [
+        {
+          "keyName": "investment_interest_transactions_pkey",
+          "columnNames": ["investment_id", "transaction_id"],
+          "composite": true,
+          "constraint": true,
+          "primary": true,
+          "unique": true
+        }
+      ],
+      "checks": [],
+      "foreignKeys": {
+        "investment_interest_transactions_investment_id_foreign": {
+          "constraintName": "investment_interest_transactions_investment_id_foreign",
+          "columnNames": ["investment_id"],
+          "localTableName": "public.investment_interest_transactions",
+          "referencedColumnNames": ["id"],
+          "referencedTableName": "public.investment",
+          "deleteRule": "cascade",
+          "updateRule": "cascade"
+        },
+        "investment_interest_transactions_transaction_id_foreign": {
+          "constraintName": "investment_interest_transactions_transaction_id_foreign",
+          "columnNames": ["transaction_id"],
+          "localTableName": "public.investment_interest_transactions",
+          "referencedColumnNames": ["id"],
+          "referencedTableName": "public.transaction",
+          "deleteRule": "cascade",
+          "updateRule": "cascade"
+        }
+      },
+      "nativeEnums": {}
     }
   ],
   "nativeEnums": {}
