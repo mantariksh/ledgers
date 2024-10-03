@@ -36,9 +36,11 @@ export class InvestService {
   async invest({
     user_id,
     amount_in_cents,
+    term_in_months,
   }: {
     user_id: string
     amount_in_cents: number
+    term_in_months: number
   }) {
     const cash_account_id =
       await this.accountService.getSpecialAccountId('cash')
@@ -52,8 +54,8 @@ export class InvestService {
       investment.compounding_frequency = 'minute'
       investment.next_compounding_time = addMinutes(now, 1)
       investment.interest_rate = INVESTOR_INTEREST_RATE
-      investment.num_compounds_in_term = 12
-      investment.num_compounds_remaining = 12
+      investment.num_compounds_in_term = term_in_months
+      investment.num_compounds_remaining = term_in_months
       em.persist(investment)
 
       await this.entryService.createEntries(

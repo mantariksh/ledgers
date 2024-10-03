@@ -9,11 +9,12 @@ export class InvestController {
   @Post()
   async invest(
     @Body()
-    { amount_in_cents, user_id }: InvestRequestDto
+    { amount_in_cents, user_id, term_in_months }: InvestRequestDto
   ) {
     await this.investService.invest({
       user_id,
       amount_in_cents,
+      term_in_months,
     })
   }
 }

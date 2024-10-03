@@ -9,11 +9,12 @@ export class LoanController {
   @Post()
   async createLoan(
     @Body()
-    { amount_in_cents, user_id }: CreateLoanRequestDto
+    { amount_in_cents, user_id, term_in_months }: CreateLoanRequestDto
   ) {
     await this.loanService.createAndDisburseLoan({
       amount_in_cents,
       user_id,
+      term_in_months,
     })
   }
 }

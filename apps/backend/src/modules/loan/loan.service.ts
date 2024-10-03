@@ -33,9 +33,11 @@ export class LoanService {
   async createAndDisburseLoan({
     user_id,
     amount_in_cents,
+    term_in_months,
   }: {
     user_id: string
     amount_in_cents: number
+    term_in_months: number
   }) {
     const cash_account_id =
       await this.accountService.getSpecialAccountId('cash')
@@ -49,7 +51,7 @@ export class LoanService {
       loan.remaining_principal_in_cents = amount_in_cents
       loan.interest_rate = BORROWER_INTEREST_RATE
       loan.compounding_frequency = 'minute'
-      loan.num_compounds_in_term = 12
+      loan.num_compounds_in_term = term_in_months
       loan.next_compounding_time = addMinutes(now, 1)
 
       em.persist(loan)
