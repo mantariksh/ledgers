@@ -10,5 +10,11 @@ export class CronJobService {
     void this.cronJobQueue.add(CronJob.AddInvestmentInterest, null, {
       repeat: { every: 1000 },
     })
+    void this.cronJobQueue.add(CronJob.AddLoanInterest, null, {
+      repeat: { every: 1000 },
+    })
+    void this.cronJobQueue.add(CronJob.MakeLoanPayment, null, {
+      repeat: { every: 1000 },
+    })
   }
 }

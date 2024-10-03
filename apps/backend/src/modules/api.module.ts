@@ -2,6 +2,7 @@ import { Module, ModuleMetadata } from '@nestjs/common'
 import { RouterModule, Routes } from '@nestjs/core'
 import { WalletModule } from './wallet/wallet.module'
 import { InvestModule } from './invest/invest.module'
+import { LoanModule } from './loan/loan.module'
 
 const v1Routes: Routes = [
   {
@@ -9,6 +10,7 @@ const v1Routes: Routes = [
     children: [
       { path: '/wallet', module: WalletModule },
       { path: '/invest', module: InvestModule },
+      { path: '/loan', module: LoanModule },
     ],
   },
 ]

@@ -477,6 +477,246 @@
           "length": 6,
           "mappedType": "datetime"
         },
+        "borrower_id": {
+          "name": "borrower_id",
+          "type": "varchar(255)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "length": 255,
+          "mappedType": "string"
+        },
+        "principal_in_cents": {
+          "name": "principal_in_cents",
+          "type": "int",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "mappedType": "integer"
+        },
+        "remaining_principal_in_cents": {
+          "name": "remaining_principal_in_cents",
+          "type": "int",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "mappedType": "integer"
+        },
+        "interest_rate": {
+          "name": "interest_rate",
+          "type": "real",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "mappedType": "float"
+        },
+        "compounding_frequency": {
+          "name": "compounding_frequency",
+          "type": "varchar(255)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "length": 255,
+          "mappedType": "string"
+        },
+        "num_compounds_in_term": {
+          "name": "num_compounds_in_term",
+          "type": "int",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "mappedType": "integer"
+        },
+        "next_compounding_time": {
+          "name": "next_compounding_time",
+          "type": "timestamptz",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "length": 6,
+          "mappedType": "datetime"
+        }
+      },
+      "name": "loan",
+      "schema": "public",
+      "indexes": [
+        {
+          "keyName": "loan_pkey",
+          "columnNames": ["id"],
+          "composite": false,
+          "constraint": true,
+          "primary": true,
+          "unique": true
+        }
+      ],
+      "checks": [],
+      "foreignKeys": {
+        "loan_borrower_id_foreign": {
+          "constraintName": "loan_borrower_id_foreign",
+          "columnNames": ["borrower_id"],
+          "localTableName": "public.loan",
+          "referencedColumnNames": ["id"],
+          "referencedTableName": "public.user",
+          "updateRule": "cascade"
+        }
+      },
+      "nativeEnums": {}
+    },
+    {
+      "columns": {
+        "loan_id": {
+          "name": "loan_id",
+          "type": "varchar(255)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "length": 255,
+          "mappedType": "string"
+        },
+        "transaction_id": {
+          "name": "transaction_id",
+          "type": "varchar(255)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "length": 255,
+          "mappedType": "string"
+        }
+      },
+      "name": "loan_payment_transactions",
+      "schema": "public",
+      "indexes": [
+        {
+          "keyName": "loan_payment_transactions_pkey",
+          "columnNames": ["loan_id", "transaction_id"],
+          "composite": true,
+          "constraint": true,
+          "primary": true,
+          "unique": true
+        }
+      ],
+      "checks": [],
+      "foreignKeys": {
+        "loan_payment_transactions_loan_id_foreign": {
+          "constraintName": "loan_payment_transactions_loan_id_foreign",
+          "columnNames": ["loan_id"],
+          "localTableName": "public.loan_payment_transactions",
+          "referencedColumnNames": ["id"],
+          "referencedTableName": "public.loan",
+          "deleteRule": "cascade",
+          "updateRule": "cascade"
+        },
+        "loan_payment_transactions_transaction_id_foreign": {
+          "constraintName": "loan_payment_transactions_transaction_id_foreign",
+          "columnNames": ["transaction_id"],
+          "localTableName": "public.loan_payment_transactions",
+          "referencedColumnNames": ["id"],
+          "referencedTableName": "public.transaction",
+          "deleteRule": "cascade",
+          "updateRule": "cascade"
+        }
+      },
+      "nativeEnums": {}
+    },
+    {
+      "columns": {
+        "loan_id": {
+          "name": "loan_id",
+          "type": "varchar(255)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "length": 255,
+          "mappedType": "string"
+        },
+        "transaction_id": {
+          "name": "transaction_id",
+          "type": "varchar(255)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "length": 255,
+          "mappedType": "string"
+        }
+      },
+      "name": "loan_interest_transactions",
+      "schema": "public",
+      "indexes": [
+        {
+          "keyName": "loan_interest_transactions_pkey",
+          "columnNames": ["loan_id", "transaction_id"],
+          "composite": true,
+          "constraint": true,
+          "primary": true,
+          "unique": true
+        }
+      ],
+      "checks": [],
+      "foreignKeys": {
+        "loan_interest_transactions_loan_id_foreign": {
+          "constraintName": "loan_interest_transactions_loan_id_foreign",
+          "columnNames": ["loan_id"],
+          "localTableName": "public.loan_interest_transactions",
+          "referencedColumnNames": ["id"],
+          "referencedTableName": "public.loan",
+          "deleteRule": "cascade",
+          "updateRule": "cascade"
+        },
+        "loan_interest_transactions_transaction_id_foreign": {
+          "constraintName": "loan_interest_transactions_transaction_id_foreign",
+          "columnNames": ["transaction_id"],
+          "localTableName": "public.loan_interest_transactions",
+          "referencedColumnNames": ["id"],
+          "referencedTableName": "public.transaction",
+          "deleteRule": "cascade",
+          "updateRule": "cascade"
+        }
+      },
+      "nativeEnums": {}
+    },
+    {
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "varchar(255)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "length": 255,
+          "mappedType": "string"
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamptz",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "length": 6,
+          "mappedType": "datetime"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamptz",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "length": 6,
+          "mappedType": "datetime"
+        },
         "investor_id": {
           "name": "investor_id",
           "type": "varchar(255)",
