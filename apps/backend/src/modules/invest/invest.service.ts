@@ -9,6 +9,7 @@ import {
   ref,
 } from '@mikro-orm/postgresql'
 import { Injectable, Logger } from '@nestjs/common'
+import { calculateInterest } from 'common/utils/interest'
 import { addMinutes, endOfSecond } from 'date-fns'
 import { AccountService } from 'modules/account/account.service'
 import { Investment } from 'modules/database/entities/investment.entity'
@@ -154,12 +155,7 @@ export class InvestService {
     await this.em.transactional(async (em) => {
       await em.lock(investment, LockMode.PESSIMISTIC_WRITE)
 
-      // Simple interest for now
-      const { interest_rate, principal_in_cents, num_compounds_in_term } =
-        investment
-      const interest = Math.ceil(
-        (interest_rate * principal_in_cents) / num_compounds_in_term
-      )
+      const interest = calculateInterest(investment)
 
       this.logger.log({
         msg: 'Adding interest for investment',
