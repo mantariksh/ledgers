@@ -155,6 +155,14 @@ export class InvestService {
     await this.em.transactional(async (em) => {
       await em.lock(investment, LockMode.PESSIMISTIC_WRITE)
 
+      if (
+        !investment.next_compounding_time ||
+        investment.next_compounding_time.getTime() > now.getTime()
+      ) {
+        // Interest has already been updated by another cron job
+        return
+      }
+
       const interest = calculateInterest(investment)
 
       this.logger.log({
@@ -208,12 +216,6 @@ export class InvestService {
       },
       populate: ['investor'],
     })
-    if (investmentsToUpdate.length > 0) {
-      this.logger.log({
-        msg: 'Found investments to update',
-        numInvestments: investmentsToUpdate.length,
-      })
-    }
     for (const investment of investmentsToUpdate) {
       await this.updateInterestForOneInvestment({ investment })
     }
