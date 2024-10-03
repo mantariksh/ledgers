@@ -6,7 +6,6 @@ import {
   MikroORM,
 } from '@mikro-orm/postgresql'
 import { Injectable, Logger } from '@nestjs/common'
-import { calculateInterest } from 'common/utils/interest'
 import { calculateLoanRepayment } from 'common/utils/interest'
 import { addMinutes, endOfSecond } from 'date-fns'
 import { AccountService } from 'modules/account/account.service'
@@ -101,7 +100,7 @@ export class LoanService {
         return
       }
 
-      const interest = calculateInterest(loan)
+      const { interest_repayment: interest } = calculateLoanRepayment(loan)
 
       this.logger.log({
         msg: 'Adding interest for loan',
