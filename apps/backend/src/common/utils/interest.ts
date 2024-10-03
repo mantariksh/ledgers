@@ -1,7 +1,7 @@
 import { MONTHS_PER_YEAR } from 'common/constants/time'
 
 /**
- * Implements compound interset formula,
+ * Implements compound interest formula,
  * A = P(1 + r/n)^t
  */
 const calculateFinalCompoundInterestAmount = (
