@@ -1,7 +1,7 @@
 /**
  * Simple interest for now
  */
-export const calculateInterest = ({
+export const calculateInterestForInvestment = ({
   principal_in_cents,
   interest_rate,
   num_compounds_in_term,

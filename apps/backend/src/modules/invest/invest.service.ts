@@ -9,7 +9,7 @@ import {
   ref,
 } from '@mikro-orm/postgresql'
 import { Injectable, Logger } from '@nestjs/common'
-import { calculateInterest } from 'common/utils/interest'
+import { calculateInterestForInvestment } from 'common/utils/interest'
 import { addMinutes, endOfSecond } from 'date-fns'
 import { AccountService } from 'modules/account/account.service'
 import { Investment } from 'modules/database/entities/investment.entity'
@@ -163,7 +163,7 @@ export class InvestService {
         return
       }
 
-      const interest = calculateInterest(investment)
+      const interest = calculateInterestForInvestment(investment)
 
       this.logger.log({
         msg: 'Adding interest for investment',
