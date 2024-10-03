@@ -1,20 +1,27 @@
+import { MONTHS_PER_YEAR } from 'common/constants/time'
+
 /**
- * Simple interest for now
+ * Returns the interest to be credited for an investment period.
+ *
+ * Assumes interest rate is "annual" interest rate (in the case of
+ * our toy app, this is a "per 12-minute" interest rate).
  */
 export const calculateInterestForInvestment = ({
   principal_in_cents,
   interest_rate,
-  num_compounds_in_term,
 }: {
   principal_in_cents: number
   interest_rate: number
-  num_compounds_in_term: number
 }) => {
-  return Math.ceil((interest_rate * principal_in_cents) / num_compounds_in_term)
+  return Math.ceil((interest_rate * principal_in_cents) / MONTHS_PER_YEAR)
 }
 
 /**
- * Simple interest for now
+ * Returns the interest + principal amounts to be repaid for a
+ * loan period.
+ *
+ * Assumes interest rate is "annual" interest rate (in the case of
+ * our toy app, this is a "per 12-minute" interest rate).
  */
 export const calculateLoanRepayment = ({
   principal_in_cents,
@@ -31,7 +38,7 @@ export const calculateLoanRepayment = ({
   principal_repayment: number
 } => {
   const total_interest = principal_in_cents * interest_rate
-  const interest_repayment = Math.ceil(total_interest / num_compounds_in_term)
+  const interest_repayment = Math.ceil(total_interest / MONTHS_PER_YEAR)
   const max_principal_repayment = Math.ceil(
     principal_in_cents / num_compounds_in_term
   )
