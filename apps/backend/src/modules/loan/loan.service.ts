@@ -50,8 +50,8 @@ export class LoanService {
       loan.principal_in_cents = amount_in_cents
       loan.remaining_principal_in_cents = amount_in_cents
       loan.interest_rate = BORROWER_INTEREST_RATE
-      loan.compounding_frequency = 'minute'
-      loan.num_compounds_in_term = term_in_months
+      loan.compounding_frequency = 'month'
+      loan.term_in_months = term_in_months
       loan.next_compounding_time = addMinutes(now, 1)
 
       em.persist(loan)

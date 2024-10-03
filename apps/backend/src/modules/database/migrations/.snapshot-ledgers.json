@@ -524,8 +524,8 @@
           "length": 255,
           "mappedType": "string"
         },
-        "num_compounds_in_term": {
-          "name": "num_compounds_in_term",
+        "term_in_months": {
+          "name": "term_in_months",
           "type": "int",
           "unsigned": false,
           "autoincrement": false,
@@ -755,8 +755,8 @@
           "length": 255,
           "mappedType": "string"
         },
-        "num_compounds_in_term": {
-          "name": "num_compounds_in_term",
+        "term_in_months": {
+          "name": "term_in_months",
           "type": "int",
           "unsigned": false,
           "autoincrement": false,
@@ -764,8 +764,8 @@
           "nullable": false,
           "mappedType": "integer"
         },
-        "num_compounds_remaining": {
-          "name": "num_compounds_remaining",
+        "term_remaining_in_months": {
+          "name": "term_remaining_in_months",
           "type": "int",
           "unsigned": false,
           "autoincrement": false,

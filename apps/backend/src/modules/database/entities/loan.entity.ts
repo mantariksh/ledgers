@@ -26,10 +26,10 @@ export class Loan extends BaseEntity {
   interest_rate: number
 
   @Property()
-  compounding_frequency: 'minute'
+  compounding_frequency: 'month'
 
   @Property()
-  num_compounds_in_term: number
+  term_in_months: number
 
   @Property({ type: 'timestamp with time zone', nullable: true })
   next_compounding_time: Date | null

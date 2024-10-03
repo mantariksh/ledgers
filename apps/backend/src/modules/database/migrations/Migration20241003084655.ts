@@ -3,7 +3,7 @@ import { Migration } from '@mikro-orm/migrations'
 export class Migration20241003084655 extends Migration {
   override async up(): Promise<void> {
     this.addSql(
-      `create table "investment" ("id" varchar(255) not null, "created_at" timestamptz not null, "updated_at" timestamptz not null, "investor_id" varchar(255) not null, "principal_in_cents" int not null, "interest_rate" real not null, "compounding_frequency" varchar(255) not null, "num_compounds_in_term" int not null, "num_compounds_remaining" int not null, "next_compounding_time" timestamptz null, "payout_transaction_id" varchar(255) null, constraint "investment_pkey" primary key ("id"));`
+      `create table "investment" ("id" varchar(255) not null, "created_at" timestamptz not null, "updated_at" timestamptz not null, "investor_id" varchar(255) not null, "principal_in_cents" int not null, "interest_rate" real not null, "compounding_frequency" varchar(255) not null, "term_in_months" int not null, "term_remaining_in_months" int not null, "next_compounding_time" timestamptz null, "payout_transaction_id" varchar(255) null, constraint "investment_pkey" primary key ("id"));`
     )
     this.addSql(
       `alter table "investment" add constraint "investment_payout_transaction_id_unique" unique ("payout_transaction_id");`

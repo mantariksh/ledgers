@@ -51,11 +51,11 @@ export class InvestService {
       const investment = new Investment()
       investment.principal_in_cents = amount_in_cents
       investment.investor = ref(investor)
-      investment.compounding_frequency = 'minute'
+      investment.compounding_frequency = 'month'
       investment.next_compounding_time = addMinutes(now, 1)
       investment.interest_rate = INVESTOR_INTEREST_RATE
-      investment.num_compounds_in_term = term_in_months
-      investment.num_compounds_remaining = term_in_months
+      investment.term_in_months = term_in_months
+      investment.term_remaining_in_months = term_in_months
       em.persist(investment)
 
       await this.entryService.createEntries(
@@ -87,7 +87,7 @@ export class InvestService {
     em: EntityManager
   }) {
     if (
-      investment.num_compounds_remaining !== 0 ||
+      investment.term_remaining_in_months !== 0 ||
       investment.next_compounding_time !== null
     ) {
       throw new Error('Cannot pay out investment with remaining time')
@@ -195,8 +195,8 @@ export class InvestService {
 
       // Update investment
       investment.interest_transactions.add(update_interest_transaction)
-      investment.num_compounds_remaining -= 1
-      if (investment.num_compounds_remaining === 0) {
+      investment.term_remaining_in_months -= 1
+      if (investment.term_remaining_in_months === 0) {
         investment.next_compounding_time = null
         await this.handleInvestmentPayout({ investment, em })
       } else {
@@ -214,7 +214,7 @@ export class InvestService {
         next_compounding_time: {
           $lt: now,
         },
-        num_compounds_remaining: { $gt: 0 },
+        term_remaining_in_months: { $gt: 0 },
       },
       populate: ['investor'],
     })
